@@ -15,7 +15,8 @@ for folder, subs, files in os.walk('/media/laveena/Academics/Natural language pr
                             words = str.split()
                             words.append("EOF")
                             wr1.writerow(words)
-                else:
+                    src.close()
+                if filename.endswith('hi'):
                     with open(os.path.join(folder, filename), 'r') as src:
                         text = src.readlines()
                         words = []
@@ -24,7 +25,7 @@ for folder, subs, files in os.walk('/media/laveena/Academics/Natural language pr
                             words = str.split()
                             words.append("EOF")
                             wr2.writerow(words)
-                src.close()
+                    src.close()
         dest2.close()
         dest1.close()
 
