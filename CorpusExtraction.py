@@ -24,6 +24,11 @@ for folder, subs, files in os.walk('/media/laveena/Academics/Natural language pr
                             words = str.split()
                             words.append("EOF")
                             wr2.writerow(words)
+                src.close()
+        dest2.close()
+        dest1.close()
+
+
 
 
 
