@@ -52,13 +52,12 @@ for langoneline in clean_languageone:
             wordlist[word] = 1
         else:
             wordlist[word] += 1
-wordlist2={}
 for langtwoline in clean_languagetwo:
     for word in langtwoline.split(','):
-        if word not in wordlist2:
-            wordlist2[word] = 1
+        if word not in wordlist:
+            wordlist[word] = 1
         else:
-            wordlist2[word] += 1
+            wordlist[word] += 1
 
 # Creating two dictionaries that map the languageoneword and thelanguagetwo words to a unique integer
 threshold = 20
@@ -71,12 +70,10 @@ for word,count in wordlist.items():
 
 languagetwowordstoint ={}
 word_number =0
-for word,count in wordlist2.items():
+for word,count in wordlist.items():
     if count >= threshold:
         languagetwowordstoint[word] = word_number
         word_number += 1
-        if(len(languagetwowordstoint) == len(languageonewordstoint)):
-            break;
                 
 # Adding the last tokens to these two dictionaries
 tokens = ['<PAD>', '<EOS>', '<OUT>', '<SOS>']
@@ -312,11 +309,10 @@ def split_into_batches(languageone,languagetwo,batch_size):
 
 # Splitting the languageone and languagetwo into training and validation sets
 training_validation_split = int(len(sorted_clean_languageone)*0.15)
-test_validation_split = int(len(sorted_clean_languagetwo)*0.15)
 training_languageone = sorted_clean_languageone[training_validation_split:]
-training_languagetwo = sorted_clean_languagetwo[test_validation_split:]
+training_languagetwo = sorted_clean_languagetwo[training_validation_split:]
 validation_languageone = sorted_clean_languageone[:training_validation_split]
-validation_languagetwo = sorted_clean_languagetwo[:test_validation_split]
+validation_languagetwo = sorted_clean_languagetwo[:training_validation_split]
 
 #Training
 batch_ind_chk_training_loss =100
