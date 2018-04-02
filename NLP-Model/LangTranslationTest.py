@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Mar 17 20:26:18 2018
+
+@author: amishr28
+"""
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -52,13 +58,12 @@ for langoneline in clean_languageone:
             wordlist[word] = 1
         else:
             wordlist[word] += 1
-wordlist2={}
 for langtwoline in clean_languagetwo:
     for word in langtwoline.split(','):
-        if word not in wordlist2:
-            wordlist2[word] = 1
+        if word not in wordlist:
+            wordlist[word] = 1
         else:
-            wordlist2[word] += 1
+            wordlist[word] += 1
 
 # Creating two dictionaries that map the languageoneword and thelanguagetwo words to a unique integer
 threshold = 20
@@ -71,12 +76,10 @@ for word,count in wordlist.items():
 
 languagetwowordstoint ={}
 word_number =0
-for word,count in wordlist2.items():
+for word,count in wordlist.items():
     if count >= threshold:
         languagetwowordstoint[word] = word_number
         word_number += 1
-        if(len(languagetwowordstoint) == len(languageonewordstoint)):
-            break;
                 
 # Adding the last tokens to these two dictionaries
 tokens = ['<PAD>', '<EOS>', '<OUT>', '<SOS>']
@@ -312,78 +315,48 @@ def split_into_batches(languageone,languagetwo,batch_size):
 
 # Splitting the languageone and languagetwo into training and validation sets
 training_validation_split = int(len(sorted_clean_languageone)*0.15)
-test_validation_split = int(len(sorted_clean_languagetwo)*0.15)
 training_languageone = sorted_clean_languageone[training_validation_split:]
-training_languagetwo = sorted_clean_languagetwo[test_validation_split:]
+training_languagetwo = sorted_clean_languagetwo[training_validation_split:]
 validation_languageone = sorted_clean_languageone[:training_validation_split]
-validation_languagetwo = sorted_clean_languagetwo[:test_validation_split]
+validation_languagetwo = sorted_clean_languagetwo[:training_validation_split]
 
-#Training
-batch_ind_chk_training_loss =100
-batch_ind_chk_validation_loss =((len(training_languageone))//batch_size)//2 -1
-#batch_ind_chk_validation_loss =10
-total_training_loss_error =0
-list_validation_loss_error =[]
-early_stopping_check =0
-early_stopping_stop =1000
+########## PART 4 - TESTING THE SEQ2SEQ MODEL ##########
+ 
+ 
+ 
+# Loading the weights and Running the session
 checkpoint = "./SemanticTranslation_weights.ckpt"
-
-#iter = 0
-sess.run(tf.global_variables_initializer())
-for epoch in range(1, epochs + 1):
-    for batch_index, (padded_languageone_in_batch, padded_languagetwo_in_batch) in enumerate(split_into_batches(training_languageone, training_languagetwo, batch_size)):
-#        if iter>10:
-#            break;
-#        iter+=1
-        starting_time = time.time()
-        _, batch_training_loss_error = sess.run([optimizer_gradient_clipping, loss_error], {inputs: padded_languageone_in_batch,
-                                                                                               targets: padded_languagetwo_in_batch,
-                                                                                               lr: learning_rate,                                                                                              
-                                                                                               sequence_length: padded_languagetwo_in_batch.shape[1],
-                                                                                               keep_prob: keep_probability})
-        total_training_loss_error += batch_training_loss_error
-        ending_time = time.time()
-        batch_time = ending_time - starting_time
-        if batch_index % batch_ind_chk_training_loss == 0:
-            print('Epoch: {:>3}/{}, Batch: {:>4}/{}, Training Loss Error: {:>6.3f}, Training Time on 100 Batches: {:d} seconds'.format(epoch,
-                                                                                                                                       epochs,
-                                                                                                                                       batch_index,
-                                                                                                                                       len(training_languageone) // batch_size,
-                                                                                                                                       total_training_loss_error / batch_ind_chk_training_loss,
-                                                                                                                                       int(batch_time * batch_ind_chk_training_loss)))
-            total_training_loss_error = 0
-        if batch_index % batch_ind_chk_validation_loss == 0 and batch_index > 0:
-            total_validation_loss_error = 0
-            starting_time = time.time()
-            for batch_index_validation, (padded_languageone_in_batch, padded_languagetwo_in_batch) in enumerate(split_into_batches(validation_languageone, validation_languagetwo, batch_size)):
-                batch_validation_loss_error = sess.run(loss_error, {inputs: padded_languageone_in_batch,
-                                                                       targets: padded_languagetwo_in_batch,
-                                                                       lr: learning_rate,
-                                                                       sequence_length: padded_languagetwo_in_batch.shape[1],
-                                                                       keep_prob: 1})
-                total_validation_loss_error += batch_validation_loss_error
-            ending_time = time.time()
-            batch_time = ending_time - starting_time
-            average_validation_loss_error = total_validation_loss_error / (len(validation_languageone) / batch_size)
-            print('Validation Loss Error: {:>6.3f}, Batch Validation Time: {:d} seconds'.format(average_validation_loss_error, int(batch_time)))
-            learning_rate *= learning_rate_decay
-            if learning_rate < min_learning_rate:
-                learning_rate = min_learning_rate
-            list_validation_loss_error.append(average_validation_loss_error)
-            if average_validation_loss_error <= min(list_validation_loss_error):
-                print('I now speak perfect Hindi!!')
-                early_stopping_check = 0
-                saver = tf.train.Saver()
-                saver.save(sess, checkpoint)
-            else:
-                print("Sorry I do not speak Hindi right now but will practice and improve.")
-                early_stopping_check += 1
-                if early_stopping_check == early_stopping_stop:
-                    break
-    if early_stopping_check == early_stopping_stop:
-        print("My apologies, I am unable to translate the give data to Hindi.")
+session = tf.InteractiveSession()
+session.run(tf.global_variables_initializer())
+saver = tf.train.Saver()
+saver.restore(session, checkpoint)
+ 
+# Converting the languageone from strings to lists of encoding integers
+def convert_string2int(langoneline, word2int):
+    langoneline = clean_text(langoneline)
+    return [word2int.get(word, word2int['<OUT>']) for word in langoneline.split()]
+ 
+# Setting up the chat
+while(True):
+    langoneline = input("You: ")
+    if langoneline == 'Goodbye':
         break
-
-
-
-
+    langoneline = convert_string2int(langoneline, languageonewordstoint)
+    langoneline = langoneline + [languageonewordstoint['<PAD>']] * (25 - len(langoneline))
+    fake_batch = np.zeros((batch_size, 25))
+    fake_batch[0] = langoneline
+    predicted_langtwoline = session.run(test_predictions, {inputs: fake_batch, keep_prob: 0.5})[0]
+    langtwoline = ''
+    for i in np.argmax(predicted_langtwoline, 1):
+        if languagetwoints2word[i] == '<EOS>':
+            token = '|'
+        elif languagetwoints2word[i] == '<OUT>':
+            token = 'out '
+        elif languagetwoints2word[i] == '<PAD>':
+            token = 'pad '
+        else:
+            token = ' ' + languagetwoints2word[i]
+        langtwoline += token
+        if token == '|':
+            break
+    print('ChatBot: ' + langtwoline)
