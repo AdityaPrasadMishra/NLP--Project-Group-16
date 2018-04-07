@@ -146,12 +146,13 @@ public class HindiTranslater {
         Convert.sentence = sentences;      
         HindiHelper.words = Convert.sentence.split(" ");
         HindiHelper.posMap = Convert.gpn.getposMap();
-        
+        //changes the graph to hindi, by extracting word meaning of enlish and translate into hindi
         GraphPassingNode newgpn = Convert.convert(sentences, Convert.gpn, lang,phraseMap,sMap);
-        
+        newgpn = newgpn;
         /*for(String key: newgpn.getAspGraph()){
         	System.out.println(key);
         }*/
+        
         
         GraphPassingNode gpnfinal = HindiHelper.mainModule(sMap);        
         

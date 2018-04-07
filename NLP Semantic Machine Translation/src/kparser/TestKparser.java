@@ -17,8 +17,6 @@ import module.Convert2;
 import module.HindiGenerator;
 import module.HindiHelper;
 import module.HindiTranslater;
-import module.JapaneseGenerator;
-import module.JapaneseTranslater;
 import module.MultiwordExpressionFinder;
 import module.Transliteration;
 import module.graph.SentenceToGraph;
@@ -40,7 +38,7 @@ public class TestKparser {
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		String sentences = "Jonh works for IBM at Aizona ? ";
+		String sentences = "He studied the subject";
 //		SentenceToGraph stg = new SentenceToGraph();
 //		GraphPassingNode gpn = stg.extractGraph("Tom went to the market.", false, true,false);
 //		System.out.println(gpn.getposMap());
@@ -59,8 +57,7 @@ public class TestKparser {
 
 		Convert.wordMap.clear();
 		
-		String translation = JapaneseTranslater.jpnTranslate(sentences,sMap);
-		System.out.println(translation);
+		
 
 		  	
 	}

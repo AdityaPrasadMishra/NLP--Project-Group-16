@@ -50,6 +50,8 @@ public class HindiHelper {
 	public static String[][] verb = new String[VERB_ROW][VERB_COL];
 	public static String words[] = Convert.sentence.split(" ");
 	public static HashMap<String, String> posMap = Convert.gpn.getposMap(); 	
+	
+	
 	public static GraphPassingNode mainModule(HashMap<String, String> sMap){		    
         HindiHelper.preps_HindiModule(Convert.sentence);
         HindiHelper.class_HindiModule(Convert.gpn);
@@ -62,7 +64,12 @@ public class HindiHelper {
         		int x = i+1;
         		cop_verb = word[i] + "-" + x;        		
         	}
-        }        
+        	
+        	
+        	
+        	
+        } 
+        
         if(posMap.get(cop_verb) != null) 
         {        	
         	if(cop_verb.contains("will")){
@@ -158,11 +165,14 @@ public class HindiHelper {
         HindiHelper.verbDisambiguate();
         return HindiHelper.createfinalgpn(Convert.gpn,sMap);
 	}
+	
+	
 	 public static void readVerb(){
 	    	
 	        
 	    	try
 	        {
+	    		
 	            Scanner inputStream = new Scanner(new File("./resources/lightverb.txt"));
 	            int row = 0;
 	            while (inputStream.hasNextLine()){
@@ -209,6 +219,13 @@ public class HindiHelper {
 		            	break;
 		            	}
 		            }
+		        	else if(pos.equals("PRP")) {
+		        		if(key.equalsIgnoreCase(k)){	
+			        		ArrayList<String> values = ee.getValue();		 
+			        		rules(key,pos,values);
+			        		break;
+		        		}
+		        	}
 		        }
 		    } 
 		}
@@ -252,6 +269,32 @@ public class HindiHelper {
 	    
 	    public static void copularverbs(int i,String key, String pos, ArrayList<String> values){
 	    			//if he will
+	    			if(Convert.wordMap.containsKey("he") && (shouldflag == 1 ||mustflag ==1 )&& pos.equals("PRP")) {
+	    				String sm = values.get(i);
+	    				sm = "उसे";
+	    				Collections.replaceAll(values, values.get(i), sm);
+	    				
+	    			}
+	    			if(Convert.wordMap.containsKey("i") && (shouldflag == 1 ||mustflag ==1 )&& pos.equals("PRP")) {
+	    				String sm = values.get(i);
+	    				sm = "मुझे";
+	    				Collections.replaceAll(values, values.get(i), sm);
+	    				
+	    			}
+	    			if(Convert.wordMap.containsKey("they") && (shouldflag == 1 ||mustflag ==1 )&& pos.equals("PRP")) {
+	    				String sm = values.get(i);
+	    				sm = "उन्हें";
+	    				Collections.replaceAll(values, values.get(i), sm);
+	    				
+	    			}
+	    			if(Convert.wordMap.containsKey("you") && (shouldflag == 1 ||mustflag ==1 )&& pos.equals("PRP")) {
+	    				String sm = values.get(i);
+	    				sm = "तुम्हे";
+	    				Collections.replaceAll(values, values.get(i), sm);
+	    				
+	    			}
+	    			
+	    			
 					if(Convert.wordMap.containsKey("he") && willflag == 1 ){
 						String sm = values.get(i);
 						int last = sm.lastIndexOf("ना");
@@ -1893,6 +1936,11 @@ public class HindiHelper {
 	    {	    	
 	    	 
 	    	for(int i =0; i< values.size();i++){
+	    		if(pos.equals("PRP")) {
+	    			if(shouldflag == 1 || mustflag == 1) {
+	    				copularverbs(i, key, pos, values);
+	    			}
+	    		}
 	    		
 		    	if(pos.equals("VB")){		    		
 		    		if (willflag == 1 || shouldflag == 1 || wouldflag == 1 || shallflag == 1 || mustflag == 1 || mightflag == 1 || mayflag ==1 || haveflag == 1 || havingflag == 1
@@ -1910,12 +1958,17 @@ public class HindiHelper {
 					if(Convert.wordMap.containsKey("he")){
 						int flag = 0;
 						for(int row =0; row<VERB_ROW; row++){
-							if( values.get(i).equals(verb[row][0]) ){
+							if(verb[row][0] == null) {
+								break;
+							}
+							if( values.get(i).contains(verb[row][0]) ){
 								String sm = verb[row][1].concat(" था");
 								Collections.replaceAll(values, values.get(i), sm);
 								flag = 1;
 								break;
 							}
+							
+		
 						}
 						if(flag == 0){
 							String sm = values.get(i);
@@ -1941,7 +1994,10 @@ public class HindiHelper {
 					else if(Convert.wordMap.containsKey("she")){
 						int flag = 0;
 						for(int row =0; row<VERB_ROW; row++){
-							if( values.get(i).equals(verb[row][0]) ){
+							if(verb[row][0] == null) {
+								break;
+							}
+							if( values.get(i).contains(verb[row][0]) ){
 								String sm = verb[row][2].concat(" थी");
 								Collections.replaceAll(values, values.get(i), sm);
 								flag = 1;
@@ -2398,6 +2454,8 @@ public class HindiHelper {
 						}
 						else{
 							right = Convert.wordMap.get(roles[0].toLowerCase()).get(0);	
+							if (right.contentEquals("नॉट"))
+								right = "नहीं";
 						}							
 								
 

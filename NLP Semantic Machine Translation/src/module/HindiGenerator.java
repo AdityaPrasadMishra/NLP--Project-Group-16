@@ -33,6 +33,7 @@ public class HindiGenerator {
 			if(hin == null){
 				return "Error in parsing.";
 			}
+			
 			//printGen(hin);
 			translation = GenerateHinSent(hin,classMap,sMap);
 						

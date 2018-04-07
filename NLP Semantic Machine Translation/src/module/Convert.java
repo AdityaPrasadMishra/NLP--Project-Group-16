@@ -341,6 +341,9 @@ public static String translate(String phrase, String lang, String POS,String mai
 						
 						phras = res.getJSONObject("phrase");
 		        		res1 = phras.getString("text");
+		        		if (res1.equals("नॉट "))
+		        			res1 = "नही";
+		        		System.out.println(res1);
 		        		if(posnum == null){
 		        			posnum = HindiHelper.posMap.get(main_phrase);
 		        			if(posnum == null){
@@ -411,6 +414,9 @@ public static String translate(String phrase, String lang, String POS,String mai
 
 				if(!wordList.isEmpty()){					
 					res1 = wordList.get(0);	
+					if (res1.contentEquals("नॉट"));
+	        			res1 = "नही";
+					
 				}
 				else
 				{	
