@@ -38,7 +38,7 @@ public class TestKparser {
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		String sentences = "He studied the subject";
+		String sentences = "They work for ASU in this semester. ";
 //		SentenceToGraph stg = new SentenceToGraph();
 //		GraphPassingNode gpn = stg.extractGraph("Tom went to the market.", false, true,false);
 //		System.out.println(gpn.getposMap());
@@ -51,6 +51,7 @@ public class TestKparser {
 //		HashMap<String, String> sMap = NamedEntityTagger.getStringToNamedEntityMap();
 		 
 		String translation1  = HindiTranslater.hinTranslate(sentences, sMap);
+
 		System.out.println(translation1);
 //		String translation1 = HindiTranslater.hinTranslate(sentences, sMap);
 //		System.out.println(translation1);

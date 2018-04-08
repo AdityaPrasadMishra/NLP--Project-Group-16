@@ -22,7 +22,7 @@ public class HindiHelper {
 	
 	public static HashMap<String, String> wordMapOld = new HashMap<String, String>();
 	public static final int VERB_ROW = 23; //no. of rows in lightverb.txt
-	public static final int VERB_COL = 3; //no. of columns in lightverb.txt
+	public static final int VERB_COL = 4; //no. of columns in lightverb.txt
 	public static int willflag = 0; // to check whether will is present as a future tense in sentence
 	public static int shouldflag = 0; // to check whether should is present as a future tense in sentence
 	public static int wouldflag = 0;
@@ -1502,106 +1502,122 @@ public class HindiHelper {
 					}	
 
 							//if he did
-					if(Convert.wordMap.containsKey("he") && didflag == 1 ){
-						String sm = values.get(i);
-						int last = sm.lastIndexOf("ना");
-						int last2 = sm.lastIndexOf("ाना");
-						int last3 = sm.lastIndexOf("ोना");
-						if(last3 != -1){
-							sm=sm.substring(0, last3);
-							sm=sm.concat(" चुका ता");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
+					if(Convert.wordMap.containsKey("he")&& (didflag ==1)){
+						int flag = 0;
+						for(int row =0; row<VERB_ROW; row++){
+							if( values.get(i).equals(verb[row][0]) ){
+								Collections.replaceAll(values, values.get(i), verb[row][1]);
+								flag = 1;
+								break;
+							}
 						}
-						else if(last2 != -1){
-							sm=sm.substring(0, last2);
-							sm=sm.concat(" चुका ता");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
-						}
-						else if(last != -1){
-							sm=sm.substring(0, last);
-							sm=sm.concat(" चुका ता");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
-						}
-					}
-
-					//if she did
-					else if(Convert.wordMap.containsKey("she") && didflag == 1 ){
-						String sm = values.get(i);
-						int last = sm.lastIndexOf("ना");
-						int last2 = sm.lastIndexOf("ाना");
-						int last3 = sm.lastIndexOf("ोना");
-						if(last3 != -1){
-							sm=sm.substring(0, last3);
-							sm=sm.concat("चुकी ती");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
-						}
-						else if(last2 != -1){
-							sm=sm.substring(0, last2);
-							sm=sm.concat("चुकी ती");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
-						}
-						else if(last != -1){
-							sm=sm.substring(0, last);
-							sm=sm.concat("चुकी ती");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
+						if(flag == 0){
+							String sm = values.get(i);
+							int last = sm.lastIndexOf("ना");
+							int last2 = sm.lastIndexOf("ाना");
+							if(last2 != -1){
+								sm=sm.substring(0, last2);
+								sm=sm.concat("ा");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
+							else if(last != -1){
+								sm=sm.substring(0, last);
+								sm=sm.concat("ा");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
 						}
 					}
+					
+					
+					//if she
+					else if(Convert.wordMap.containsKey("she") && (didflag == 1)){
+						int flag = 0;
+						for(int row =0; row<VERB_ROW; row++){
+							if( values.get(i).equals(verb[row][0]) ){
+								Collections.replaceAll(values, values.get(i), verb[row][2]);
+								flag = 1;
+								break;
+							}
+						}
+						if(flag == 0){
+							String sm = values.get(i);
+							int last = sm.lastIndexOf("ना");
+							int last2 = sm.lastIndexOf("ाना");
+							if(last2 != -1){
+								sm=sm.substring(0, last2);
+								sm=sm.concat("ी");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
+							else if(last != -1){
+								sm=sm.substring(0, last);
+								sm=sm.concat("ी");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
+						}
+					}
+					//by default case gender from name can't be known
+					
 					// i did
 					else if(Convert.wordMap.containsKey("i") && didflag == 1 ){
-						String sm = values.get(i);
-						int last = sm.lastIndexOf("ना");
-						int last2 = sm.lastIndexOf("ाना");
-						int last3 = sm.lastIndexOf("ोना");
-						if(last3 != -1){
-							sm=sm.substring(0, last3);
-							sm=sm.concat("चुका ता");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
+						int flag = 0;
+						for(int row =0; row<VERB_ROW; row++){
+							if( values.get(i).equals(verb[row][0]) ){
+								Collections.replaceAll(values, values.get(i), verb[row][1]);
+								flag = 1;
+								break;
+							}
 						}
-						else if(last2 != -1){
-							sm=sm.substring(0, last2);
-							sm=sm.concat("चुका ता");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
-						}
-						else if(last != -1){
-							sm=sm.substring(0, last);
-							sm=sm.concat("चुका ता");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
+						if(flag == 0){
+							String sm = values.get(i);
+							int last = sm.lastIndexOf("ना");
+							int last2 = sm.lastIndexOf("ाना");
+							if(last2 != -1){
+								sm=sm.substring(0, last2);
+								sm=sm.concat("ा");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
+							else if(last != -1){
+								sm=sm.substring(0, last);
+								sm=sm.concat("ा");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
 						}
 					}
 		
 					// if we/they did
 					else if( (Convert.wordMap.containsKey("we") ||Convert.wordMap.containsKey("they")) && didflag == 1 ){
-						String sm = values.get(i);
-						
-						int last = sm.lastIndexOf("ना");
-						int last2 = sm.lastIndexOf("ाना");
-						int last3 = sm.lastIndexOf("ोना");
-						if(last3 != -1){
-							sm=sm.substring(0, last3);
-							sm=sm.concat("चुके ते");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
+						int flag = 0;
+						for(int row =0; row<VERB_ROW; row++){
+							if( values.get(i).equals(verb[row][0]) ){
+								Collections.replaceAll(values, values.get(i), verb[row][3].concat("थे"));
+								flag = 1;
+								break;
+							}
 						}
-						else if(last2 != -1){
-							sm=sm.substring(0, last2);
-							sm=sm.concat("चुके ते");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
-						}
-						else if(last != -1){
-							sm=sm.substring(0, last);
-							sm=sm.concat("चुके ते");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
+						if(flag == 0){
+							String sm = values.get(i);
+							int last = sm.lastIndexOf("ना");
+							int last2 = sm.lastIndexOf("ाना");
+							if(last2 != -1){
+								sm=sm.substring(0, last2);
+								sm=sm.concat(" े");
+								sm= sm.concat("थे");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
+							else if(last != -1){
+								sm=sm.substring(0, last);
+								sm=sm.concat(" े");
+								sm= sm.concat("थे");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
 						}
 						
 					}
@@ -1634,27 +1650,30 @@ public class HindiHelper {
 					
 					//if gender not known
 					else if(didflag == 1 ){
-						String sm = values.get(i);
-						int last = sm.lastIndexOf("ना");
-						int last2 = sm.lastIndexOf("ाना");
-						int last3 = sm.lastIndexOf("ोना");
-						if(last3 != -1){
-							sm=sm.substring(0, last3);
-							sm=sm.concat("चुका ता");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
+						int flag = 0;
+						for(int row =0; row<VERB_ROW; row++){
+							if( values.get(i).equals(verb[row][0]) ){
+								Collections.replaceAll(values, values.get(i), verb[row][1]);
+								flag = 1;
+								break;
+							}
 						}
-						else if(last2 != -1){
-							sm=sm.substring(0, last2);
-							sm=sm.concat("चुका ता");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
-						}
-						else if(last != -1){
-							sm=sm.substring(0, last);
-							sm=sm.concat("चुका ता");
-							Collections.replaceAll(values, values.get(i), sm);
-							//System.out.println(values.get(i));
+						if(flag == 0){
+							String sm = values.get(i);
+							int last = sm.lastIndexOf("ना");
+							int last2 = sm.lastIndexOf("ाना");
+							if(last2 != -1){
+								sm=sm.substring(0, last2);
+								sm=sm.concat("ा");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
+							else if(last != -1){
+								sm=sm.substring(0, last);
+								sm=sm.concat("ा");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
 						}
 					}	
 
@@ -1950,7 +1969,7 @@ public class HindiHelper {
 		    	}
 				if(pos.equals("VBD")){
 					if (willflag == 1 || shouldflag == 1 || wouldflag == 1 || shallflag == 1 || mustflag == 1 || mightflag == 1 || mayflag ==1 || haveflag == 1 || havingflag == 1
-			    			|| doflag == 1 || didflag == 1 || doesflag == 1 || doingflag == 1 || couldflag == 1 || canflag == 1 || beflag == 1 || amflag == 1) {
+			    			|| doflag == 1 ||  doesflag == 1 || doingflag == 1 || couldflag == 1 || canflag == 1 || beflag == 1 || amflag == 1) {
 			    			copularverbs(i,key,pos,values);
 						}
 					else{
@@ -2020,6 +2039,36 @@ public class HindiHelper {
 								//System.out.println(values.get(i));
 							}
 						}
+					}
+					else if( (Convert.wordMap.containsKey("we") ||Convert.wordMap.containsKey("they"))){
+						int flag = 0;
+						for(int row =0; row<VERB_ROW; row++){
+							if( values.get(i).equals(verb[row][0]) ){
+								Collections.replaceAll(values, values.get(i), verb[row][3].concat("थे"));
+								flag = 1;
+								break;
+							}
+						}
+						if(flag == 0){
+							String sm = values.get(i);
+							int last = sm.lastIndexOf("ना");
+							int last2 = sm.lastIndexOf("ाना");
+							if(last2 != -1){
+								sm=sm.substring(0, last2);
+								sm=sm.concat(" े");
+								sm= sm.concat("थे");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
+							else if(last != -1){
+								sm=sm.substring(0, last);
+								sm=sm.concat(" े");
+								sm= sm.concat("थे");
+								Collections.replaceAll(values, values.get(i), sm);
+								//System.out.println(values.get(i));
+							}
+						}
+						
 					}
 					//by default case gender from name can't be known
 					else{
