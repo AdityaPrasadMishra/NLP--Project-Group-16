@@ -112,6 +112,10 @@ public class HindiGenerator {
 		return translation_g;
 	}
 
+	
+	
+	
+	
 	private static String Sub_Child(GenNode subhpn) {
 		String trail = "";
 		String lead = "";
