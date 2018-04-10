@@ -90,18 +90,19 @@ public class HindiGenerator {
 					else if ((key.getSemanticRole()!=null)&&(key.getSemanticRole().equals("negative")))
 						negativetranslation  =key.getLabel() ;
 					else {
-						translatioVerb =  key.getLabel() + " " +translatioVerb;
+						translatioVerb = translatioVerb + " " + key.getLabel() ;
 					}
 				}
 
 			}
-			translatioVerb = translatioVerb + negativetranslation+verb;
+			translatioVerb = translatioVerb + " " +negativetranslation+" " +verb;
+			
+			
+			translation_g += " "+translatioVerb;
 			if (question == 1) {
 				translation_g = translation_g + "?";
 			}
 			translation_g = translation_g.replace("~", " ");
-			translation_g += translatioVerb;
-
 		} catch (Exception ex) {
 			if (translation_g != null) {
 				return translation_g;

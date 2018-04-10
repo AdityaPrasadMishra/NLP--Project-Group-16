@@ -38,7 +38,7 @@ public class TestKparser {
 	public static void main(String[] args) throws Exception {
 		String sentences = "";
 		try {
-			String fileName = args[0] + "hinout";
+			String fileName = "resources/reference2.txt";
 			PrintWriter outputStream = new PrintWriter(fileName);
 			Scanner inputStream = new Scanner(new File(args[0]));
 			while (inputStream.hasNextLine()) {
