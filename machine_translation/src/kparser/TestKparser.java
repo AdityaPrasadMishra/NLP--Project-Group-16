@@ -38,7 +38,11 @@ public class TestKparser {
 	public static void main(String[] args) throws Exception {
 		String sentences = "";
 		try {
+<<<<<<< HEAD:NLP Semantic Machine Translation/src/kparser/TestKparser.java
 			String fileName = "resources/reference2.txt";
+=======
+			String fileName =  "hindi_output.txt";
+>>>>>>> Changing the parent folder name to machine_translation:machine_translation/src/kparser/TestKparser.java
 			PrintWriter outputStream = new PrintWriter(fileName);
 			Scanner inputStream = new Scanner(new File(args[0]));
 			while (inputStream.hasNextLine()) {
