@@ -108,3 +108,5 @@ NLP-Model/SemanticTranslation_weights.ckpt.index
 *.index
 *.data-00000-of-00001
 *.index
+*.en
+*.hi
