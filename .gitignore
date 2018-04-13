@@ -112,3 +112,10 @@ NLP-Model/SemanticTranslation_weights.ckpt.index
 *.hi
 *.meta
 NLP-Model/checkpoint
+/machine_translation/.classpath
+
+/machine_translation/.project
+
+/machine_translation/.Readme.txt.swap
+
+/machine_translation/*.swap
