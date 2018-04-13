@@ -4,11 +4,8 @@ import io
 
 ######---------------------Part 1- Data Preprocessing---------------------#############
 #Importing the Dataset
-#languageone =open('IITB.en-hi.en', encoding = 'utf-8', errors = 'ignore').read().split('\n')
-languageone =open('eng.txt', encoding = 'utf-8', errors = 'ignore').read().split('\n')
-
-#languagetwo =open('IITB.en-hi.hi', encoding = 'utf-8', errors = 'ignore').read().split('\n')
-languagetwo =open('hin.txt', encoding = 'utf-8', errors = 'ignore').read().split('\n')
+languageone =open('IITB.en-hi.en', encoding = 'utf-8', errors = 'ignore').read().split('\n')
+languagetwo =open('IITB.en-hi.hi', encoding = 'utf-8', errors = 'ignore').read().split('\n')
 
 def clean_text(text):
     text= text.lower()
