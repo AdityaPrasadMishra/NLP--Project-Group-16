@@ -110,3 +110,5 @@ NLP-Model/SemanticTranslation_weights.ckpt.index
 *.index
 *.en
 *.hi
+*.meta
+NLP-Model/checkpoint
