@@ -21,28 +21,32 @@ def clean_text(text):
     text = re.sub(r"\'d", " would", text)
     text = re.sub(r"won't", "will not", text)
     text = re.sub(r"can't", "cannot", text)
-    text = re.sub(r"[-()\"#/@;:<>{}+=~|.?\',!%*]", "", text)
+    text = re.sub(r"[-()\"#/@;:<>{}+=~|._?\',!%*]", "", text)
+    text = re.sub(' +',' ', text)
+    text = text.strip()
     return text
 
 #Count number of words in a sentence
 def count_words(line):
     count = len(re.findall(r'\w+', line))
-    print(count)
+    #print(count)
     return count
 
 # Cleaning the languageone
 clean_languageone = []
 clean_languagetwo = []
+total_lines_processed = 0
 for i in range(len(languageone)):
     temp = clean_text(languageone[i])
     num_words = count_words(temp)
+    total_lines_processed += 1
     if(num_words >=3 and num_words <=15):
-        print(temp)
+        #print(temp)
         clean_languageone.append(temp)
         clean_languagetwo.append(clean_text(languagetwo[i]))    
 
 # Create new files and then write the new corpus content to them
-english_file = open("English.txt", "w")
+english_file = io.open("English.txt", "w", encoding="utf-8")
 hindi_file = io.open("Hindi.txt", "w", encoding="utf-8")
 
 for item in clean_languageone:
@@ -53,4 +57,6 @@ for item in clean_languagetwo:
 
 english_file.close()
 hindi_file.close()
+
+print("Total lines processed are ",total_lines_processed)
 ## PRE-PROCESSING DONE
