@@ -1,0 +1,11 @@
+epochs = 25
+batch_size = 128
+rnn_size = 128
+num_layers = 3
+encoding_embedding_size = 512
+decoding_embedding_size = 512
+learning_rate =0.015
+learning_rate_decay = 0.95
+min_learning_rate = 0.001
+keep_probability = 0.8
+

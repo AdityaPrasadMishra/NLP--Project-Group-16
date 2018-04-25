@@ -5,17 +5,20 @@ Created on Fri Mar 16 16:28:54 2018
 
 @author: aditya
 """
+#Part of code was reused from the chatbot tutorial at https://www.superdatascience.com/courses/deep-learning-and-nlp-a-z/ and Google NMT tutorial
 #Importing Libraries
+import codecs
 import numpy as np
+import matplotlib.pyplot as plt
 import tensorflow as tf
 import re
 import time
-
+import random
 
 ######---------------------Part 1- Data Preprocessing---------------------#############
 #Importing the Dataset
-languageone =open('IITB.en-hi.en', encoding = 'utf-8', errors = 'ignore').read().split('\n')
-languagetwo =open('IITB.en-hi.hi', encoding = 'utf-8', errors = 'ignore').read().split('\n')
+languageone =codecs.open('train.en', encoding = 'utf-8', errors = 'ignore').read().split('\n')
+languagetwo =codecs.open('train.hi', encoding = 'utf-8', errors = 'ignore').read().split('\n')
 
 def clean_text(text):
     text= text.lower()
@@ -31,7 +34,7 @@ def clean_text(text):
     text = re.sub(r"\'d", " would", text)
     text = re.sub(r"won't", "will not", text)
     text = re.sub(r"can't", "cannot", text)
-    text = re.sub(r"[-()\"#/@;:<>{}+=~|.?\',!%*]", "", text)
+    text = re.sub(r"[-()\"#/@;:<>{}+=~|.?\'‘’“”।\,!%*]", "", text)
     return text
 
 # Cleaning the languageone
@@ -63,7 +66,7 @@ for langtwoline in clean_languagetwo:
             wordlist2[word] += 1
 
 # Creating two dictionaries that map the languageoneword and thelanguagetwo words to a unique integer
-threshold = 20
+threshold = 5
 languageonewordstoint ={}
 word_number =0
 for word,count in wordlist.items():
@@ -236,7 +239,7 @@ def seq2seq_model(inputs, targets, keep_prob, batch_size, sequence_length, langu
                                                               encoder_embedding_size,
                                                               initializer = tf.random_uniform_initializer(0, 1))
     encoder_state = encoder(encoder_embedded_input, rnn_size, num_layers, keep_prob, sequence_length)
-    preprocessed_targets = preprocessfortfmodel(targets, languageonewordstoint, batch_size)
+    preprocessed_targets = preprocessfortfmodel(targets, languagetwowordstoint, batch_size)
     decoder_embeddings_matrix = tf.Variable(tf.random_uniform([languagetwo_num_words + 1, decoder_embedding_size], 0, 1))
     decoder_embedded_input = tf.nn.embedding_lookup(decoder_embeddings_matrix, preprocessed_targets)
     training_predictions, test_predictions = decoder(decoder_embedded_input,
@@ -253,16 +256,16 @@ def seq2seq_model(inputs, targets, keep_prob, batch_size, sequence_length, langu
 
 ##################################Part 3 - training the SEQ2SEQ Model #################################
 # setting the Hyperparameter
-epochs = 20
-batch_size = 64
-rnn_size = 256
+epochs = 25
+batch_size = 128
+rnn_size = 128
 num_layers = 3
-encoding_embedding_size = 256
-decoding_embedding_size = 256
-learning_rate =0.01
-learning_rate_decay = 0.9
-min_learning_rate = 0.0001
-keep_probability = 0.5
+encoding_embedding_size = 512
+decoding_embedding_size = 512
+learning_rate =0.015
+learning_rate_decay = 0.95
+min_learning_rate = 0.001
+keep_probability = 0.8
 
 #Defining a Session
 tf.reset_default_graph()
@@ -271,12 +274,12 @@ sess = tf.InteractiveSession()
 inputs,targets,lr,keep_prob =createsampleinput()
 
 #Setting the Sequence length
-sequence_length = tf.placeholder_with_default(25,None,name='sequence_length')
+sequence_length = tf.placeholder_with_default(15,None,name='sequence_length')
 
 #Getting the shape of Input tensor
 input_shape = tf.shape(inputs)
 
-#Getting the Training and Test Predictions
+#Getting the Training and Test Predictionswrapper
 training_predictions, test_predictions = seq2seq_model(tf.reverse(inputs,[-1]),
                                                                 targets,
                                                                 keep_prob,
@@ -317,10 +320,10 @@ def split_into_batches(languageone,languagetwo,batch_size):
 # Splitting the languageone and languagetwo into training and validation sets
 training_validation_split = int(len(sorted_clean_languageone)*0.15)
 test_validation_split = int(len(sorted_clean_languagetwo)*0.15)
-training_languageone = sorted_clean_languageone[training_validation_split:]
-training_languagetwo = sorted_clean_languagetwo[test_validation_split:]
-validation_languageone = sorted_clean_languageone[:training_validation_split]
-validation_languagetwo = sorted_clean_languagetwo[:test_validation_split]
+training_languageone = sorted_clean_languageone[0:30000]
+training_languagetwo = sorted_clean_languagetwo[0:30000]
+validation_languageone = sorted_clean_languageone[30000:31000]
+validation_languagetwo = sorted_clean_languagetwo[30000:31000]
 
 #training_validation_split = len(languageone_into_int)
 #test_validation_split = len(languagetwo_into_int)
@@ -330,8 +333,8 @@ validation_languagetwo = sorted_clean_languagetwo[:test_validation_split]
 #validation_languagetwo = languagetwo_into_int
 
 #Training
-batch_ind_chk_training_loss =100
-batch_ind_chk_validation_loss =((len(training_languageone))//batch_size)//2 -1
+batch_ind_chk_training_loss =50
+batch_ind_chk_validation_loss =50
 #batch_ind_chk_validation_loss =10
 total_training_loss_error =0
 list_validation_loss_error =[]
@@ -340,9 +343,16 @@ early_stopping_stop =1000
 checkpoint = "./SemanticTranslation_weights.ckpt"
 
 #iter = 0
+training_errors=[]
+validation_errors=[]
+epochnum=[]
 sess.run(tf.global_variables_initializer())
 itere =0 
 for epoch in range(1, epochs + 1):
+    best_training_error =-1
+    best_validation_error=-1
+    #random.shuffle(training_languageone)
+    #random.shuffle(training_languagetwo)
     for batch_index, (padded_languageone_in_batch, padded_languagetwo_in_batch) in enumerate(split_into_batches(training_languageone, training_languagetwo, batch_size)):
 
  #       if itere>1:
@@ -357,6 +367,7 @@ for epoch in range(1, epochs + 1):
         total_training_loss_error += batch_training_loss_error
         ending_time = time.time()
         batch_time = ending_time - starting_time
+        trininglosserror = total_training_loss_error / batch_ind_chk_training_loss
         if batch_index % batch_ind_chk_training_loss == 0:
             print('Epoch: {:>3}/{}, Batch: {:>4}/{}, Training Loss Error: {:>6.3f}, Training Time on 100 Batches: {:d} seconds'.format(epoch,
                                                                                                                                        epochs,
@@ -378,6 +389,11 @@ for epoch in range(1, epochs + 1):
             ending_time = time.time()
             batch_time = ending_time - starting_time
             average_validation_loss_error = total_validation_loss_error / (len(validation_languageone) / batch_size)
+            if(average_validation_loss_error< best_validation_error or best_validation_error==-1):
+                best_training_error = trininglosserror
+     #           print(best_training_error)
+                best_validation_error = average_validation_loss_error
+      #          print(best_validation_error)
             print('Validation Loss Error: {:>6.3f}, Batch Validation Time: {:d} seconds'.format(average_validation_loss_error, int(batch_time)))
             learning_rate *= learning_rate_decay
             if learning_rate < min_learning_rate:
@@ -396,7 +412,12 @@ for epoch in range(1, epochs + 1):
     if early_stopping_check == early_stopping_stop:
         print("My apologies, I am unable to translate the give data to Hindi.")
         break
-
-
+    #print(best_training_error)
+    training_errors.append(best_training_error)
+    validation_errors.append(best_validation_error)
+    epochnum.append(epoch)
+print(training_errors) 
+print(validation_errors)
+print(epochnum) 
 
 
