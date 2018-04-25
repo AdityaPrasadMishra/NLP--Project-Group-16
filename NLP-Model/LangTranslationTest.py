@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Mar 17 20:26:18 2018
-
-@author: amishr28
-"""
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -20,8 +14,8 @@ import time
 
 ######---------------------Part 1- Data Preprocessing---------------------#############
 #Importing the Dataset
-languageone =open('English.csv', encoding = 'utf-8', errors = 'ignore').read().split('\n')
-languagetwo =open('Hindi.csv', encoding = 'utf-8', errors = 'ignore').read().split('\n')
+languageone =open('test.en', encoding = 'utf-8', errors = 'ignore').read().split('\n')
+languagetwo =open('test.hi', encoding = 'utf-8', errors = 'ignore').read().split('\n')
 
 def clean_text(text):
     text= text.lower()
@@ -37,7 +31,7 @@ def clean_text(text):
     text = re.sub(r"\'d", " would", text)
     text = re.sub(r"won't", "will not", text)
     text = re.sub(r"can't", "cannot", text)
-    text = re.sub(r"[-()\"#/@;:<>{}+=~|.?\']", "", text)
+    text = re.sub(r"[-()\"#/@;:<>{}+=~|.?\',!%*]", "", text)
     return text
 
 # Cleaning the languageone
@@ -53,17 +47,20 @@ for langtwoline in languagetwo:
 # Creating a dictionary that maps each word to its number of occurrences
 wordlist = {}
 for langoneline in clean_languageone:
-    for word in langoneline.split(','):
+    for word in langoneline.split(' '):
         if word not in wordlist:
-            wordlist[word] = 1
+            if(word.strip()!=''):
+                wordlist[word] = 1
         else:
             wordlist[word] += 1
+wordlist2={}
 for langtwoline in clean_languagetwo:
-    for word in langtwoline.split(','):
-        if word not in wordlist:
-            wordlist[word] = 1
+    for word in langtwoline.split(' '):
+        if word not in wordlist2:
+            if(word.strip()!=''):
+                wordlist2[word] = 1
         else:
-            wordlist[word] += 1
+            wordlist2[word] += 1
 
 # Creating two dictionaries that map the languageoneword and thelanguagetwo words to a unique integer
 threshold = 20
@@ -76,10 +73,12 @@ for word,count in wordlist.items():
 
 languagetwowordstoint ={}
 word_number =0
-for word,count in wordlist.items():
+for word,count in wordlist2.items():
     if count >= threshold:
         languagetwowordstoint[word] = word_number
         word_number += 1
+#        if(len(languagetwowordstoint) == len(languageonewordstoint)):
+#            break;
                 
 # Adding the last tokens to these two dictionaries
 tokens = ['<PAD>', '<EOS>', '<OUT>', '<SOS>']
@@ -93,6 +92,8 @@ languagetwoints2word = {w_i: w for w, w_i in languagetwowordstoint.items()}
  
 # Adding the End Of String token to the end of every langtwo
 for i in range(len(clean_languagetwo)):
+    clean_languageone[i] += ' <EOS>'
+for i in range(len(clean_languagetwo)):
     clean_languagetwo[i] += ' <EOS>'
  
 # Translating all the languageone and the languagetwo into integers
@@ -100,7 +101,7 @@ for i in range(len(clean_languagetwo)):
 languageone_into_int = []
 for langone in clean_languageone:
     ints = []
-    for word in langone.split(','):
+    for word in langone.split(' '):
         if word not in languageonewordstoint:
             ints.append(languageonewordstoint['<OUT>'])
         else:
@@ -109,7 +110,7 @@ for langone in clean_languageone:
 languagetwo_into_int = []
 for langtwo in clean_languagetwo:
     ints = []
-    for word in langtwo.split(','):
+    for word in langtwo.split(' '):
         if word not in languagetwowordstoint:
             ints.append(languagetwowordstoint['<OUT>'])
         else:
@@ -119,7 +120,7 @@ for langtwo in clean_languagetwo:
 # Sorting languageone and languagetwo by the length of languageone
 sorted_clean_languageone = []
 sorted_clean_languagetwo = []
-for length in range(1, 25 + 1):
+for length in range(1, 30 + 1):
     for i in enumerate(languageone_into_int):
         if len(i[1]) == length:
             sorted_clean_languageone.append(languageone_into_int[i[0]])
@@ -229,35 +230,35 @@ def decoder(decoder_embedded_input, decoder_embeddings_matrix, encoder_state, nu
     return training_predictions, test_predictions
  
 # Building the seq2seq model
-def seq2seq_model(inputs, targets, keep_prob, batch_size, sequence_length, languagetwo_num_words, languageone_num_words, encoder_embedding_size, decoder_embedding_size, rnn_size, num_layers, languageonewordstoint):
+def seq2seq_model(inputs, targets, keep_prob, batch_size, sequence_length, languagetwo_num_words, languageone_num_words, encoder_embedding_size, decoder_embedding_size, rnn_size, num_layers, languagetwowordstoint):
     encoder_embedded_input = tf.contrib.layers.embed_sequence(inputs,
-                                                              languagetwo_num_words + 1,
+                                                              languageone_num_words + 1,
                                                               encoder_embedding_size,
                                                               initializer = tf.random_uniform_initializer(0, 1))
     encoder_state = encoder(encoder_embedded_input, rnn_size, num_layers, keep_prob, sequence_length)
     preprocessed_targets = preprocessfortfmodel(targets, languageonewordstoint, batch_size)
-    decoder_embeddings_matrix = tf.Variable(tf.random_uniform([languageone_num_words + 1, decoder_embedding_size], 0, 1))
+    decoder_embeddings_matrix = tf.Variable(tf.random_uniform([languagetwo_num_words + 1, decoder_embedding_size], 0, 1))
     decoder_embedded_input = tf.nn.embedding_lookup(decoder_embeddings_matrix, preprocessed_targets)
     training_predictions, test_predictions = decoder(decoder_embedded_input,
                                                          decoder_embeddings_matrix,
                                                          encoder_state,
-                                                         languageone_num_words,
+                                                         languagetwo_num_words,
                                                          sequence_length,
                                                          rnn_size,
                                                          num_layers,
-                                                         languageonewordstoint,
+                                                         languagetwowordstoint,
                                                          keep_prob,
                                                          batch_size)
     return training_predictions, test_predictions
 
 ##################################Part 3 - training the SEQ2SEQ Model #################################
 # setting the Hyperparameter
-epochs = 100
+epochs = 20
 batch_size = 64
-rnn_size = 512
+rnn_size = 256
 num_layers = 3
-encoding_embedding_size = 512
-decoding_embedding_size = 512
+encoding_embedding_size = 256
+decoding_embedding_size = 256
 learning_rate =0.01
 learning_rate_decay = 0.9
 min_learning_rate = 0.0001
@@ -287,7 +288,7 @@ training_predictions, test_predictions = seq2seq_model(tf.reverse(inputs,[-1]),
                                                                 decoding_embedding_size,
                                                                 rnn_size,
                                                                 num_layers,
-                                                               languageonewordstoint )
+                                                               languagetwowordstoint )
 
 with tf.name_scope("Optimization"):
     loss_error = tf.contrib.seq2seq.sequence_loss(training_predictions,
@@ -315,10 +316,23 @@ def split_into_batches(languageone,languagetwo,batch_size):
 
 # Splitting the languageone and languagetwo into training and validation sets
 training_validation_split = int(len(sorted_clean_languageone)*0.15)
+test_validation_split = int(len(sorted_clean_languagetwo)*0.15)
 training_languageone = sorted_clean_languageone[training_validation_split:]
-training_languagetwo = sorted_clean_languagetwo[training_validation_split:]
+training_languagetwo = sorted_clean_languagetwo[test_validation_split:]
 validation_languageone = sorted_clean_languageone[:training_validation_split]
-validation_languagetwo = sorted_clean_languagetwo[:training_validation_split]
+validation_languagetwo = sorted_clean_languagetwo[:test_validation_split]
+
+#training_validation_split = len(languageone_into_int)
+#test_validation_split = len(languagetwo_into_int)
+#training_languageone = languageone_into_int
+#training_languagetwo = languagetwo_into_int
+#validation_languageone = languageone_into_int
+#validation_languagetwo = languagetwo_into_int
+
+
+
+
+
 
 ########## PART 4 - TESTING THE SEQ2SEQ MODEL ##########
  
@@ -342,12 +356,15 @@ while(True):
     if langoneline == 'Goodbye':
         break
     langoneline = convert_string2int(langoneline, languageonewordstoint)
-    langoneline = langoneline + [languageonewordstoint['<PAD>']] * (25 - len(langoneline))
-    fake_batch = np.zeros((batch_size, 25))
+    langoneline = langoneline + [languageonewordstoint['<PAD>']] * (20 - len(langoneline))
+    print(langoneline)
+    fake_batch = np.zeros((batch_size, 20))
     fake_batch[0] = langoneline
     predicted_langtwoline = session.run(test_predictions, {inputs: fake_batch, keep_prob: 0.5})[0]
+ #   print(predicted_langtwoline)
     langtwoline = ''
     for i in np.argmax(predicted_langtwoline, 1):
+        print (i)
         if languagetwoints2word[i] == '<EOS>':
             token = '|'
         elif languagetwoints2word[i] == '<OUT>':
@@ -359,4 +376,18 @@ while(True):
         langtwoline += token
         if token == '|':
             break
-    print('ChatBot: ' + langtwoline)
+    print('MAx Val: ' + langtwoline)
+    for j in range(len(predicted_langtwoline[1])):
+      for i in predicted_langtwoline[1][j]:
+        if languagetwoints2word[i] == '<EOS>':
+            token = '|'
+        elif languagetwoints2word[i] == '<OUT>':
+            token = 'out '
+        elif languagetwoints2word[i] == '<PAD>':
+            token = 'pad '
+        else:
+            token = ' ' + languagetwoints2word[i]
+        langtwoline += token
+        if token == '|':
+            break
+      print('other Val: ' + langtwoline)
